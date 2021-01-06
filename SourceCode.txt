@@ -1,0 +1,205 @@
+package com.searchandupdate.searchandupdate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+//This class is used for mapping UserService
+@Controller
+@RequestMapping("/main")
+public class MainApp {
+	
+@Autowired
+private UserService userService;
+	
+	
+	@RequestMapping(value = "/register", method = RequestMethod.GET)
+
+	public String register() {
+		return "register";
+	}
+	
+	@RequestMapping(value = "/updateuser", method = RequestMethod.GET)
+
+	public String updateUser() {
+		return "updateuser";
+	}
+	@RequestMapping(value = "/home", method = RequestMethod.GET)
+
+	public String home() {
+		return "home";
+	}
+}
+
+---------------------------------------------------------------------------------
+
+package com.searchandupdate.searchandupdate;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+//This class is used as a rest controller
+@RestController
+@RequestMapping("/main")
+public class MainApp2 {
+	@Autowired
+	private UserService userService;
+		
+	@PostMapping("/register")
+	public String addUser(@RequestParam("uname")String name,@RequestParam("pass")String pass,@RequestParam("city")String city) {
+		
+		if(userService.addUser(name, pass, city)) {
+			
+		return "regsiter successfull";
+		}
+		return "register failed";
+	}
+	@PostMapping("/updateuser")
+	public String updateUser(@RequestParam("uname") String name,
+			@RequestParam("pass") String pass,
+			@RequestParam("city") String city) {
+		if (userService.updateUser(name,pass,city)) {
+			return "user updated!";
+		}
+		return "user not updated!";
+	}
+
+}
+	
+-------------------------------------------------------------------------
+
+package com.searchandupdate.searchandupdate;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
+//This class is used for my application entry point
+@SpringBootApplication
+@EnableJpaRepositories(basePackages = "com")
+@EntityScan(basePackages = "com")
+public class SearchandupdateApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SearchandupdateApplication.class, args);
+	}
+
+}
+
+--------------------------------------------------------------------------
+
+package com.searchandupdate.searchandupdate;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class User {
+
+	@Id
+	private String uname;
+	private String pass;
+	private String city;
+	public User() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	@Override
+	public String toString() {
+		return "User [uname=" + uname + ", pass=" + pass + ", city=" + city + "]";
+	}
+	public User(String uname, String pass, String city) {
+		super();
+		this.uname = uname;
+		this.pass = pass;
+		this.city = city;
+	}
+	public String getUname() {
+		return uname;
+	}
+	public void setUname(String uname) {
+		this.uname = uname;
+	}
+	public String getPass() {
+		return pass;
+	}
+	public void setPass(String pass) {
+		this.pass = pass;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+}
+
+------------------------------------------------------------------------------
+
+package com.searchandupdate.searchandupdate;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+//This UserDao is used as a repository
+@Repository
+public interface UserDao extends CrudRepository<User, String>{
+	
+
+}
+
+----------------------------------------------------------------------------
+
+package com.searchandupdate.searchandupdate;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+//This class is used as User Service class in order to register and update users
+@Service
+public class UserService {
+
+	
+	@Autowired
+	private UserDao userDao;
+	
+	public boolean addUser(String uname, String pass, String city) {
+		
+		userDao.save(new User(uname, pass, city));
+		return true;
+	
+	}
+
+public boolean updateUser(String name, String password, String city) {
+	Optional<User> logi = userDao.findById(name);
+	if (logi.isPresent()) {
+		User login = userDao.findById(name).get();
+		login.setPass(password);
+		login.setCity(city);
+		userDao.save(login);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+}
