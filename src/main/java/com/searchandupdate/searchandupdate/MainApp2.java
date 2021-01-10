@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+
 //This class is used as a rest controller
 @RestController
 @RequestMapping("/main")
@@ -24,8 +25,9 @@ public class MainApp2 {
 	public String addUser(@RequestParam("uname")String name,@RequestParam("pass")String pass,@RequestParam("city")String city) {
 		
 		if(userService.addUser(name, pass, city)) {
-			
-		return "regsiter successfull";
+			Optional<User> mv = userService.findAUser(name);
+			String info = mv.get().toString();
+			return info;
 		}
 		return "register failed";
 	}
@@ -34,10 +36,17 @@ public class MainApp2 {
 			@RequestParam("pass") String pass,
 			@RequestParam("city") String city) {
 		if (userService.updateUser(name,pass,city)) {
-			return "user updated!";
+			Optional<User> mv = userService.findAUser(name);
+			String info = mv.get().toString();
+			return info;
 		}
-		return "user not updated!";
+		return "Incorrect search info";
 	}
 
+	@GetMapping("/loadusers")
+	public List<User> load(){
+		return userService.loadUsers();
+	}
+	
 }
 	

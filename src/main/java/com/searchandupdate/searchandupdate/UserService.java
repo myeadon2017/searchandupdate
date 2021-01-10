@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+
 //This class is used as User Service class in order to register and update users
 @Service
 public class UserService {
@@ -33,6 +35,16 @@ public boolean updateUser(String name, String password, String city) {
 	} else {
 		return false;
 	}
+
+}
+public Optional<User> findAUser(String uname){
+	Optional<User> mv = userDao.findById(uname);
+	return mv;	
+}
+
+public List<User> loadUsers(){
+	List<User> ul=(List) userDao.findAll();
+	return ul;
 }
 
 }

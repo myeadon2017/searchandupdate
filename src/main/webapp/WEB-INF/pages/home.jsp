@@ -9,6 +9,8 @@
 <body>
 <a href="/main/register">Click here</a> to register a new user.
 <br/>
-<a href="/main/updateuser">Click here</a> to manage your users.
+<a href="/main/updateuser">Click here</a> to update a users.
+<br/>
+<a href="/main/loadusers">Click here</a> to view all users.
 </body>
 </html>
